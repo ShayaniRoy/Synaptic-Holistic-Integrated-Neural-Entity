@@ -1,0 +1,231 @@
+/* =========================
+   ROOT VARIABLES
+========================= */
+:root {
+    --bg-main: #020617;
+    --glass: rgba(15, 23, 42, 0.85);
+    --border: rgba(255, 255, 255, 0.08);
+    --accent: #38bdf8;
+    --accent-red: #ef4444;
+    --text: #f1f5f9;
+}
+
+/* =========================
+   GLOBAL
+========================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Outfit', sans-serif;
+}
+
+body {
+    background: radial-gradient(circle at top left, #1e293b, var(--bg-main));
+    color: var(--text);
+    height: 100vh;
+}
+
+/* =========================
+   LAYOUT
+========================= */
+.container {
+    display: grid;
+    grid-template-columns: 280px 1fr 320px;
+    gap: 20px;
+    padding: 20px;
+    height: 100vh;
+}
+
+/* =========================
+   CARD
+========================= */
+.card {
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-title {
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+}
+
+/* =========================
+   VIDEO BOX
+========================= */
+.video-box {
+    height: 160px;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+button {
+    border: none;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    background: var(--accent);
+    color: #000;
+    transition: 0.2s;
+}
+
+button:hover {
+    opacity: 0.85;
+}
+
+button.off {
+    background: var(--accent-red);
+    color: #fff;
+}
+
+/* =========================
+   INPUTS
+========================= */
+input {
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.05);
+    color: white;
+    outline: none;
+}
+
+/* =========================
+   CHAT UI
+========================= */
+.chat-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.chat-header {
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--accent);
+}
+
+.chat-box {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 8px;
+    margin-bottom: 10px;
+}
+
+/* Scrollbar */
+.chat-box::-webkit-scrollbar {
+    width: 6px;
+}
+.chat-box::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 10px;
+}
+
+/* Messages */
+.msg {
+    padding: 10px 14px;
+    border-radius: 14px;
+    margin-bottom: 10px;
+    max-width: 75%;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.user {
+    background: var(--accent);
+    color: #000;
+    margin-left: auto;
+    border-bottom-right-radius: 4px;
+}
+
+.ai {
+    background: rgba(255,255,255,0.05);
+    border-bottom-left-radius: 4px;
+}
+
+/* =========================
+   CHAT INPUT BAR
+========================= */
+.chat-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,0,0,0.3);
+    padding: 8px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+}
+
+.chat-input input {
+    flex: 1;
+    border: none;
+    background: transparent;
+}
+
+/* =========================
+   STATUS TEXT
+========================= */
+.status {
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+/* =========================
+   WEATHER / SIDE DATA
+========================= */
+.data-box {
+    text-align: center;
+}
+
+.data-main {
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 5px 0;
+}
+
+/* =========================
+   ANIMAL / EMOTION LABELS
+========================= */
+.label {
+    font-size: 1rem;
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.sub-label {
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+/* =========================
+   ANIMATION (OPTIONAL)
+========================= */
+@keyframes glow {
+    0% { box-shadow: 0 0 5px var(--accent); }
+    50% { box-shadow: 0 0 20px var(--accent); }
+    100% { box-shadow: 0 0 5px var(--accent); }
+}
+
+.glow {
+    animation: glow 2s infinite;
+}

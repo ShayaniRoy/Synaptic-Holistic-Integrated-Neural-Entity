@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligence & Surroundings</title>
+    <style>
+        body {
+            margin: 0;
+            background: radial-gradient(circle, #1a1a2e 0%, #0f0f1a 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', sans-serif;
+            overflow: hidden;
+            color: white;
+        }
+
+        .surroundings {
+            position: relative;
+            width: 800px; /* Slightly wider to accommodate more buttons */
+            height: 700px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Central Navigation Button with Text */
+        .intel-btn {
+            z-index: 10;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(0, 212, 255, 0.5);
+            color: #00d4ff;
+            font-size: 1.2rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.2);
+            transition: all 0.5s ease;
+            text-decoration: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            animation: pulse 4s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(0, 212, 255, 0.2); }
+            50% { transform: scale(1.05); box-shadow: 0 0 50px rgba(0, 212, 255, 0.4); }
+        }
+
+        .intel-btn:hover {
+            transform: scale(1.1);
+            background: #00d4ff;
+            color: #000;
+            box-shadow: 0 0 60px #00d4ff;
+            animation: none;
+        }
+
+        /* Floating Pink Buttons */
+        .intel-link {
+            position: absolute;
+            text-decoration: none;
+            z-index: 5;
+        }
+
+        .intel-type {
+            padding: 12px 24px;
+            background: rgba(255, 20, 147, 0.15);
+            color: #ff69b4;
+            border: 2px solid #ff1493;
+            border-radius: 25px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            animation: float 6s infinite ease-in-out;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 100%;
+        }
+
+        .intel-type:hover {
+            background: #ff1493;
+            color: white;
+            box-shadow: 0 0 25px #ff1493;
+            transform: scale(1.15);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+
+        /* Positions for Link Wrappers - 6 Button Layout */
+        .i1 { top: 15%; left: 10%; animation-delay: 0.5s; }
+        .i2 { top: 15%; right: 10%; animation-delay: 1.5s; }
+        .i3 { bottom: 15%; left: 10%; animation-delay: 2.5s; }
+        .i4 { bottom: 15%; right: 10%; animation-delay: 3.5s; }
+        
+        /* New Center-side positions */
+        .i5 { top: 50%; left: -5%; transform: translateY(-50%); animation-delay: 4.5s; }
+        .i6 { top: 50%; right: -5%; transform: translateY(-50%); animation-delay: 5.5s; }
+
+    </style>
+</head>
+<body>
+
+    <div class="surroundings">
+        <a href="/financial_dashboard" class="intel-link i1">
+            <button class="intel-type">FINANCIAL INTELLIGENCE</button>
+        </a>
+        <a href="/human_dashboard" class="intel-link i2">
+            <button class="intel-type">HUMAN INTELLIGENCE</button>
+        </a>
+        <a href="/artificial_dashboard" class="intel-link i3">
+            <button class="intel-type">ARTIFICIAL INTELLIGENCE</button>
+        </a>
+        <a href="/regulatory_dashboard" class="intel-link i4">
+            <button class="intel-type">REGULATORY INTELLIGENCE</button>
+        </a>
+        
+        <a href="/animal_dashboard" class="intel-link i5">
+            <button class="intel-type">ANIMAL INTELLIGENCE</button>
+        </a>
+        <a href="/environmental_dashboard" class="intel-link i6">
+            <button class="intel-type">ENVIRONMENTAL INTELLIGENCE</button>
+        </a>
+        <a href="/intelligence" class="intel-link i7">
+            <button class="intel-type">ALL INTELLIGENCE</button>
+        </a>
+        <a href="/intelligence" class="intel-btn"> 
+            INTELLIGENCE
+        </a>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI SHINE | Neural Interface</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        :root {
+            --cyan: #00f3ff;
+            --mag: #ff00e6;
+        }
+
+        /* Background */
+        body {
+            height: 100vh;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #07070c 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            color: white;
+        }
+
+        /* Glow animation for the Bubble */
+        @keyframes glow {
+            0% { box-shadow: 0 0 30px rgba(0, 243, 255, 0.2); }
+            50% { box-shadow: 0 0 60px rgba(255, 0, 230, 0.3); }
+            100% { box-shadow: 0 0 30px rgba(0, 243, 255, 0.2); }
+        }
+
+        /* Glass Bubble */
+        .bubble {
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            animation: glow 6s infinite ease-in-out;
+            z-index: 10;
+        }
+
+        /* AI SHINE text */
+        .title {
+            font-size: 56px;
+            font-weight: bold;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, var(--cyan), var(--mag));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 10px rgba(0, 243, 255, 0.5));
+        }
+
+        .subtitle {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.6;
+            margin-bottom: 40px;
+        }
+
+        /* --- Cyber Buttons --- */
+        .hero-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 80%;
+        }
+
+        .cyber-btn {
+            position: relative;
+            padding: 15px 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 5px;
+            transition: all 0.4s;
+            overflow: hidden;
+            text-align: center;
+            display: block;
+        }
+
+        .btn-cyan {
+            color: var(--cyan);
+            border: 1px solid var(--cyan);
+            background: rgba(0, 243, 255, 0.05);
+            animation: pulse-cyan 2s infinite;
+        }
+
+        .btn-cyan:hover {
+            background: var(--cyan);
+            color: #000;
+            box-shadow: 0 0 30px var(--cyan);
+        }
+
+        .btn-mag {
+            color: var(--mag);
+            border: 1px solid var(--mag);
+            background: rgba(255, 0, 230, 0.05);
+            animation: pulse-mag 2s infinite 1s;
+        }
+
+        .btn-mag:hover {
+            background: var(--mag);
+            color: #000;
+            box-shadow: 0 0 30px var(--mag);
+        }
+
+        @keyframes pulse-cyan {
+            0%, 100% { box-shadow: 0 0 5px rgba(0, 243, 255, 0.2); }
+            50% { box-shadow: 0 0 20px rgba(0, 243, 255, 0.6); }
+        }
+
+        @keyframes pulse-mag {
+            0%, 100% { box-shadow: 0 0 5px rgba(255, 0, 230, 0.2); }
+            50% { box-shadow: 0 0 20px rgba(255, 0, 230, 0.6); }
+        }
+
+        .btn-glitch {
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .cyber-btn:hover .btn-glitch {
+            left: 100%;
+        }
+
+        /* Particles */
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+            animation: float 8s infinite ease-in-out;
+            z-index: 1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-50px) rotate(180deg); }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="circle" style="width:120px;height:120px;top:15%;left:15%; border: 1px solid var(--cyan);"></div>
+    <div class="circle" style="width:80px;height:80px;bottom:15%;right:15%; border: 1px solid var(--mag);"></div>
+    <div class="circle" style="width:40px;height:40px;top:40%;right:10%;"></div>
+
+    <div class="bubble">
+        <div class="title">AI SHINE</div>
+        <div class="subtitle">Neural Link Interface</div>
+
+        <div class="hero-actions">
+            <a href="{{ url_for('login') }}" class="cyber-btn btn-cyan">
+                <span class="btn-glitch"></span>
+                ESTABLISH LINK [LOGIN]
+            </a>
+
+            <a href="{{ url_for('signup') }}" class="cyber-btn btn-mag">
+                <span class="btn-glitch"></span>
+                INITIALIZE ACCESS [SIGNUP]
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>

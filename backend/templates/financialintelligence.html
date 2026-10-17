@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SHINE | NEURAL FINANCIAL INTERFACE</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@300;500;700&display=swap');
+
+        :root {
+            --gold: #ffcc00;
+            --gold-glow: rgba(255, 204, 0, 0.4);
+            --aurora: #00d4ff;
+            --mag: #ff00e6;
+            --glass: rgba(10, 10, 15, 0.85);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
+
+        body {
+            background: #000;
+            font-family: 'Rajdhani', sans-serif;
+            color: white;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 3D Coin Canvas Background */
+        #coinCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            filter: brightness(0.6);
+        }
+
+        .top-header { padding: 20px 0; z-index: 10; }
+        .top-header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            letter-spacing: 12px;
+            background: linear-gradient(to bottom, #fff, var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 10px var(--gold-glow));
+        }
+
+        .container {
+            width: 98vw;
+            height: 85vh;
+            display: grid;
+            grid-template-columns: 300px 1fr 300px;
+            gap: 20px;
+            padding: 10px 20px;
+        }
+
+        .panel {
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            color: var(--gold);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        /* Visual Feed Widgets */
+        .cam-frame {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid var(--aurora);
+            background: #000;
+            position: relative;
+        }
+        video { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Telemetry & Financial Stats */
+        .stat-box { text-align: center; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 15px; }
+        .val { font-size: 1.8rem; font-weight: 700; color: #fff; }
+        .sub { font-size: 0.7rem; color: #00ffaa; font-family: 'Orbitron'; }
+
+        /* Market Items */
+        .market-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 10px;
+            font-family: 'Orbitron';
+            font-size: 0.7rem;
+        }
+
+        /* Main Chat / Intel Area */
+        .main-display {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border);
+        }
+
+        #intel-log {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            scrollbar-width: none;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .msg {
+            padding: 15px 20px;
+            border-radius: 20px;
+            max-width: 80%;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+        }
+        .ai { background: rgba(0, 212, 255, 0.1); border-left: 3px solid var(--aurora); align-self: flex-start; }
+        .user { background: rgba(255, 0, 230, 0.1); border-right: 3px solid var(--mag); align-self: flex-end; }
+
+        .input-area {
+            padding: 20px;
+            background: rgba(0,0,0,0.4);
+            display: flex;
+            gap: 10px;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+        }
+        input {
+            flex: 1;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 12px;
+            color: white;
+            outline: none;
+        }
+
+        .btn-action {
+            background: var(--gold);
+            border: none;
+            border-radius: 10px;
+            padding: 0 20px;
+            font-family: 'Orbitron';
+            font-size: 0.7rem;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+
+    <canvas id="coinCanvas"></canvas>
+
+    <div class="top-header"><h1>SHINE INTELLIGENCE</h1></div>
+
+    <div class="container">
+        <aside class="panel">
+            <div class="label">Neural Sync</div>
+            <div class="cam-frame">
+                <video id="v-emo" autoplay muted></video>
+            </div>
+            <button onclick="toggleStream()" style="background:none; border:1px solid var(--aurora); color:var(--aurora); padding:5px; border-radius:5px; font-size:0.5rem; cursor:pointer;">ACTIVATE LINK</button>
+
+            <div class="stat-box">
+                <div class="label">Cognitive Load</div>
+                <div class="val" id="load-val">42.08%</div>
+            </div>
+
+            <div class="stat-box">
+                <div class="label">Heart Rate</div>
+                <div class="val" id="pulse-val" style="color:var(--mag)">72 BPM</div>
+            </div>
+        </aside>
+
+        <main class="panel main-display">
+            <div class="label">Predictive Sentiment Flow</div>
+            <div style="height: 150px;"><canvas id="marketChart"></canvas></div>
+            
+            <div id="intel-log">
+                <div class="msg ai">Financial and Neural systems initialized. Waiting for command...</div>
+            </div>
+
+            <div class="input-area">
+                <input type="text" id="user-in" placeholder="Query the system..." onkeypress="if(event.key==='Enter') send()">
+                <button class="btn-action" onclick="send()">EXECUTE</button>
+            </div>
+        </main>
+
+        <aside class="panel">
+            <div class="label">Total Asset Value</div>
+            <div class="stat-box">
+                <div class="val">$2,450,180</div>
+                <div class="sub">▲ +32.70%</div>
+            </div>
+
+            <div class="label">Live Market Assets</div>
+            <div class="market-row"><span>BTC</span><span style="color:var(--gold)">$64,231</span></div>
+            <div class="market-row"><span>ETH</span><span style="color:var(--aurora)">$3,452</span></div>
+            <div class="market-row"><span>SOL</span><span style="color:#00ffaa;">$145.20</span></div>
+
+            <div class="stat-box" style="margin-top:auto;">
+                <div class="label">Market Mood</div>
+                <div class="val" style="color:var(--gold); font-size:1.2rem;">BULLISH (78%)</div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // --- 1. Sparkling Coin Background Physics ---
+        const canvas = document.getElementById('coinCanvas');
+        const ctx = canvas.getContext('2d');
+        let coins = [];
+
+        function initCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.onresize = initCanvas;
+        initCanvas();
+
+        class Coin {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height - canvas.height;
+                this.size = Math.random() * 7 + 3;
+                this.speed = Math.random() * 2 + 0.5;
+                this.angle = Math.random() * Math.PI * 2;
+                this.spin = Math.random() * 0.1;
+                this.opacity = Math.random() * 0.4 + 0.1;
+            }
+            update() {
+                this.y += this.speed;
+                this.angle += this.spin;
+                if (this.y > canvas.height) this.reset();
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+                ctx.beginPath();
+                // Create the 3D flipping effect by scaling the ellipse width via Cosine
+                ctx.ellipse(0, 0, this.size, this.size * Math.abs(Math.cos(this.angle)), 0, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 204, 0, ${this.opacity})`;
+                ctx.fill();
+                ctx.strokeStyle = `rgba(255, 255, 255, ${this.opacity + 0.1})`;
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+
+        for(let i=0; i<80; i++) coins.push(new Coin());
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            coins.forEach(c => { c.update(); c.draw(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // --- 2. Chart Logic ---
+        const marketCtx = document.getElementById('marketChart').getContext('2d');
+        new Chart(marketCtx, {
+            type: 'line',
+            data: {
+                labels: ['1h', '2h', '3h', '4h', '5h', '6h'],
+                datasets: [{
+                    data: [65, 59, 80, 81, 56, 95],
+                    borderColor: '#ffcc00',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    pointRadius: 0,
+                    fill: true,
+                    backgroundColor: 'rgba(255, 204, 0, 0.05)'
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
+        });
+
+        // --- 3. Functional Logic ---
+        function send() {
+            const input = document.getElementById('user-in');
+            const log = document.getElementById('intel-log');
+            if(!input.value.trim()) return;
+
+            const uMsg = document.createElement('div');
+            uMsg.className = 'msg user';
+            uMsg.innerText = input.value;
+            log.appendChild(uMsg);
+
+            setTimeout(() => {
+                const aMsg = document.createElement('div');
+                aMsg.className = 'msg ai';
+                aMsg.innerText = "Analyzing financial vector for: " + input.value;
+                log.appendChild(aMsg);
+                log.scrollTop = log.scrollHeight;
+            }, 600);
+
+            input.value = '';
+            log.scrollTop = log.scrollHeight;
+        }
+
+        async function toggleStream() {
+            const v = document.getElementById('v-emo');
+            try {
+                const s = await navigator.mediaDevices.getUserMedia({video: true});
+                v.srcObject = s;
+            } catch(e) { alert("Camera access denied."); }
+        }
+
+        // Biometric randomizer
+        setInterval(() => {
+            document.getElementById('load-val').innerText = (30 + Math.random() * 20).toFixed(2) + "%";
+            document.getElementById('pulse-val').innerText = (65 + Math.floor(Math.random() * 20)) + " BPM";
+        }, 3000);
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animal Intelligence Core | Advanced</title>
+    <style>
+        :root {
+            --pink-glow: #ff1493;
+            --cyber-blue: #00f2ff;
+            --deep-purple: #1a1a2e;
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            margin: 0;
+            background: #020205;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+        }
+
+        /* Sidebar Enhancements */
+        .sidebar {
+            width: 320px;
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            border-right: 1px solid rgba(255, 20, 147, 0.2);
+            display: flex;
+            flex-direction: column;
+            padding: 25px;
+            box-sizing: border-box;
+        }
+
+        .data-stream {
+            font-size: 0.75rem;
+            line-height: 1.6;
+            font-family: 'Courier New', Courier, monospace;
+            color: #00f2ff;
+            overflow-y: auto;
+            flex-grow: 1;
+            margin-bottom: 20px;
+            mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+        }
+
+        /* Main Display & Scanner */
+        .main-display {
+            flex-grow: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, #1a0515 0%, #020205 100%);
+        }
+
+        .scanner-frame {
+            width: 450px;
+            height: 450px;
+            border: 1px solid rgba(255, 20, 147, 0.5);
+            border-radius: 50%; /* Circular scanner */
+            position: relative;
+            box-shadow: 0 0 40px rgba(255, 20, 147, 0.1), inset 0 0 40px rgba(255, 20, 147, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #subject-display {
+            font-size: 8rem;
+            filter: drop-shadow(0 0 20px var(--pink-glow));
+            transition: all 0.5s ease;
+            opacity: 0.1;
+        }
+
+        .scan-line {
+            width: 120%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--pink-glow), transparent);
+            position: absolute;
+            top: 0;
+            left: -10%;
+            box-shadow: 0 0 20px var(--pink-glow);
+            animation: scan-move 4s ease-in-out infinite;
+            z-index: 10;
+        }
+
+        @keyframes scan-move {
+            0% { top: 0%; opacity: 0; }
+            50% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 300px;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            margin-top: 30px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: var(--pink-glow);
+            box-shadow: 0 0 10px var(--pink-glow);
+            transition: width 0.3s;
+        }
+
+        /* Buttons & HUD */
+        .hud-info {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            text-align: right;
+            font-family: monospace;
+            color: var(--cyber-blue);
+            letter-spacing: 2px;
+        }
+
+        .action-btn {
+            background: transparent;
+            color: var(--pink-glow);
+            border: 1px solid var(--pink-glow);
+            padding: 12px 40px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.4s;
+            margin-top: 20px;
+        }
+
+        .action-btn:hover:not(:disabled) {
+            background: var(--pink-glow);
+            color: white;
+            box-shadow: 0 0 30px var(--pink-glow);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.3;
+            cursor: wait;
+        }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: var(--pink-glow); }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2 style="color: var(--pink-glow); font-size: 1.2rem; margin-top: 0;">BIO-INTEL CORE</h2>
+        <div class="data-stream" id="logs">
+            [SYS] Core Ready...<br>
+            [SYS] Waiting for biological uplink...
+        </div>
+        <div class="stats" style="font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+            <p>THREAT LEVEL: <span id="threat">LOW</span></p>
+            <p>INTELLIGENCE: <span id="intel-idx">--</span></p>
+        </div>
+    </div>
+
+    <div class="main-display">
+        <div class="hud-info">
+            <p id="timer">00:00:00</p>
+            <p style="font-size: 0.7rem;">SENSORS: ONLINE</p>
+        </div>
+
+        <div class="scanner-frame">
+            <div class="scan-line"></div>
+            <div id="subject-display">🧬</div>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="p-bar"></div>
+        </div>
+
+        <button class="action-btn" id="scan-trigger" onclick="runAnalysis()">Initialize DNA Scan</button>
+    </div>
+
+    <script>
+        const speciesDB = [
+            { name: "Panthera leo", icon: "🦁", intel: "Social/Strategic", threat: "CRITICAL" },
+            { name: "Orcinus orca", icon: "🐋", intel: "High-Cognition", threat: "ELEVATED" },
+            { name: "Corvus corax", icon: "🐦", intel: "Problem Solver", threat: "LOW" },
+            { name: "Elephantidae", icon: "🐘", intel: "Complex Emotional", threat: "MODERATE" },
+            { name: "Octopoda", icon: "🐙", intel: "Neural Decentralized", threat: "MINIMAL" }
+        ];
+
+        async function runAnalysis() {
+            const btn = document.getElementById('scan-trigger');
+            const logs = document.getElementById('logs');
+            const bar = document.getElementById('p-bar');
+            const subject = document.getElementById('subject-display');
+            const threatTxt = document.getElementById('threat');
+            const intelTxt = document.getElementById('intel-idx');
+
+            // Reset UI
+            btn.disabled = true;
+            bar.style.width = '0%';
+            logs.innerHTML = "[SYS] Initializing high-res scan...";
+            subject.style.opacity = "0.1";
+            subject.innerHTML = "🧬";
+
+            const steps = [
+                { msg: "Isolating biological markers...", p: 20 },
+                { msg: "Mapping neural density...", p: 50 },
+                { msg: "Sequencing genomic structure...", p: 80 },
+                { msg: "Matching database entry...", p: 100 }
+            ];
+
+            for (const step of steps) {
+                await new Promise(r => setTimeout(r, 1000));
+                logs.innerHTML += `<br>[SCAN] ${step.msg}`;
+                bar.style.width = `${step.p}%`;
+                logs.scrollTop = logs.scrollHeight;
+            }
+
+            // Final Result
+            const result = speciesDB[Math.floor(Math.random() * speciesDB.length)];
+            
+            subject.innerHTML = result.icon;
+            subject.style.opacity = "1";
+            subject.style.transform = "scale(1.2)";
+            
+            logs.innerHTML += `<br><br>[RESULT] Subject: <strong>${result.name}</strong>`;
+            threatTxt.innerText = result.threat;
+            intelTxt.innerText = result.intel;
+            
+            btn.disabled = false;
+            btn.innerText = "Rescan Subject";
+        }
+
+        // Live Clock
+        setInterval(() => {
+            document.getElementById('timer').innerText = new Date().toLocaleTimeString();
+        }, 1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SHINE | NEURAL INTERFACE</title>
+    <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&family=Orbitron:wght@500;900&display=swap');
+
+        :root { 
+            --void: #000000;
+            --glass-bg: rgba(0, 0, 0, 0.75); 
+            --text-main: #ffffff;
+            --text-muted: #666666;
+            --accent: #ff4500; 
+            --aurora: #00d4ff;
+            --fin-accent: #00ffaa;
+            --mag: #ff00e6;
+            --border: rgba(255, 255, 255, 0.08);
+            --state-color: #00ff00;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
+        
+        body { 
+            height: 100vh; color: var(--text-main); 
+            font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; 
+            background: var(--void);
+        }
+
+        .top-header {
+            position: absolute; top: 20px; width: 100%; text-align: center; z-index: 10;
+        }
+        .top-header h1 {
+            font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 2.5rem; letter-spacing: 15px;
+            background: linear-gradient(to bottom, #fff 30%, var(--accent) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(255, 69, 0, 0.5));
+        }
+
+        #universe {
+            position: fixed; width: 100%; height: 100%; z-index: -2;
+            background: radial-gradient(circle at center, #0a0a15 0%, #000 100%);
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute; background: white; border-radius: 50%;
+            opacity: 0.8; animation: twinkle var(--duration) infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .container { 
+            width: 98vw; height: 82vh; 
+            display: grid; 
+            grid-template-columns: 280px 1fr 280px; 
+            gap: 20px; padding: 20px; 
+            position: relative; margin-top: 60px;
+        }
+
+        .sidebar { 
+            display: flex; flex-direction: column; gap: 20px; 
+            background: var(--glass-bg); 
+            backdrop-filter: blur(40px); border-radius: 35px; border: 1px solid var(--border);
+            padding: 30px 20px; box-shadow: 0 0 40px rgba(0,0,0,1);
+        }
+
+        .widget { background: rgba(255,255,255,0.02); border-radius: 20px; padding: 15px; border: 1px solid rgba(255,255,255,0.04); position: relative;}
+        .label { font-size: 0.55rem; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 12px; text-transform: uppercase; text-align: center; font-weight: 700; }
+
+        .cam-frame { width: 90px; height: 90px; margin: 0 auto; border-radius: 50%; overflow: hidden; border: 2px solid var(--accent); background: #000; box-shadow: 0 0 20px rgba(255, 69, 0, 0.3); transition: 0.8s ease; position: relative; }
+        .cam-frame.env { border-color: var(--aurora); width: 70px; height: 70px; }
+        video { width: 100%; height: 100%; object-fit: cover; }
+        
+        .cam-btn { width: 100%; background: none; border: 1px solid var(--border); border-radius: 12px; font-size: 0.55rem; margin-top: 10px; cursor: pointer; padding: 8px; font-weight: 600; font-family: 'Orbitron'; color: var(--text-main); transition: 0.3s; }
+        .cam-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+
+        .telemetry { 
+            margin-top: 15px; 
+            background: rgba(0,0,0,0.4); 
+            padding: 10px; 
+            border-radius: 12px; 
+            display: none; 
+        }
+        .bar-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; font-family: 'Orbitron'; font-size: 0.5rem; }
+        .pct-val { width: 30px; color: var(--mag); font-weight: bold; }
+        .bar-bg { flex: 1; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
+        .bar-fill { height: 100%; width: 0%; transition: 0.5s ease-out; }
+
+        .scan-line { position: absolute; top: 0; width: 100%; height: 2px; background: var(--mag); box-shadow: 0 0 10px var(--mag); animation: scan 2s linear infinite; display: none; z-index: 2; }
+        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+
+        .action-btn { 
+            width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); 
+            border-radius: 12px; padding: 10px; color: var(--text-muted); 
+            font-size: 0.6rem; font-weight: 700; font-family: 'Orbitron'; cursor: pointer;
+            transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;
+            margin-top: 5px;
+        }
+        .action-btn:hover { color: #fff; background: rgba(255,255,255,0.1); border-color: #fff; }
+        .logout-btn:hover { color: #ff3333; border-color: #ff3333; background: rgba(255, 51, 51, 0.05); }
+
+        .chat-main { 
+            display: flex; 
+            flex-direction: column; 
+            width: 100%; 
+            height: 100%; 
+            overflow: hidden;
+        }
+        .chat-column { 
+            width: 100%; 
+            height: 100%; 
+            display: flex; 
+            flex-direction: column; 
+            background-image: url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=1000');
+            background-size: cover; 
+            background-position: center;
+            border-radius: 45px; 
+            border: 1px solid var(--border); 
+            overflow: hidden; 
+            box-shadow: inset 0 0 100px #000, 0 25px 60px rgba(0,0,0,0.8);
+            position: relative;
+        }
+
+        #chat-log { 
+            flex: 1; 
+            padding: 40px; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px; 
+            scrollbar-width: none; 
+            position: relative; 
+            z-index: 1; 
+        }
+        #chat-log::-webkit-scrollbar { display: none; }
+
+        .msg { padding: 18px 25px; border-radius: 25px; max-width: 85%; font-size: 0.95rem; line-height: 1.6; backdrop-filter: blur(15px); }
+        .ai { background: rgba(0, 0, 0, 0.6); align-self: flex-start; color: #fff; border: 1px solid rgba(255,255,255,0.1); border-bottom-left-radius: 5px; border-left: 4px solid var(--aurora); }
+        .user { background: rgba(188, 19, 254, 0.2); align-self: flex-end; color: white; border-bottom-right-radius: 5px; border-right: 4px solid var(--mag); box-shadow: 0 5px 20px rgba(255, 0, 230, 0.1); }
+
+        .input-wrap { 
+            flex-shrink: 0; 
+            padding: 30px; 
+            background: rgba(0, 0, 0, 0.8); 
+            border-top: 1px solid var(--border); 
+            position: relative; 
+            z-index: 5; 
+        }
+        .input-box { 
+            background: rgba(20, 20, 20, 1); border-radius: 20px; padding: 12px 15px; 
+            display: flex; align-items: center; gap: 12px; border: 1px solid var(--border); 
+        }
+        #user-in { flex: 1; background: transparent; border: none; outline: none; font-size: 1rem; color: #fff; }
+        
+        .btn { background: none; border: none; color: #555; font-size: 1.3rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; }
+        .btn:hover { color: var(--accent); }
+        
+        #emoji-container { 
+            position: absolute; 
+            bottom: 100%; 
+            right: 30px; 
+            margin-bottom: 10px;
+            display: none; 
+            z-index: 100; 
+        }
+
+        .right-sidebar {
+            display: flex; flex-direction: column; gap: 20px; 
+            background: var(--glass-bg); 
+            backdrop-filter: blur(40px); border-radius: 35px; border: 1px solid var(--border);
+            padding: 30px 20px; box-shadow: 0 0 40px rgba(0,0,0,1);
+            overflow-y: auto; scrollbar-width: none;
+        }
+
+        .market-heatmap {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        .heat-cell {
+            height: 40px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.5rem;
+            font-family: 'Orbitron';
+            font-weight: bold;
+            transition: 0.5s ease;
+            border: 1px solid rgba(255,255,255,0.05);
+            color: #fff;
+        }
+        .chart-container {
+            width: 100%;
+            height: 120px;
+            position: relative;
+        }
+
+        .fin-terminal-btn {
+            width: 100%; background: linear-gradient(135deg, rgba(0, 255, 170, 0.1) 0%, rgba(0, 255, 170, 0.02) 100%);
+            border: 1px solid var(--fin-accent); border-radius: 12px; color: var(--fin-accent);
+            padding: 12px; font-family: 'Orbitron'; font-size: 0.55rem; font-weight: 700; letter-spacing: 1px;
+            cursor: pointer; transition: 0.4s; text-align: center; margin-top: 10px;
+        }
+        .fin-terminal-btn:hover { background: var(--fin-accent); color: #000; box-shadow: 0 0 20px rgba(0, 255, 170, 0.4); }
+
+        /* LEGEND BAR STYLING */
+        .legend-container {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+            display: none; /* Initially hidden */
+        }
+        .legend-bar {
+            display: flex;
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-header">
+    <h1>SHINE</h1>
+</div>
+
+<div id="universe"></div>
+
+<div class="container">
+    <aside class="sidebar">
+        <div class="widget">
+            <div class="label" id="neural-label">Neural State</div>
+            <div id="neural-frame" class="cam-frame">
+                <div id="scan-line" class="scan-line"></div>
+                <video id="v-emo" autoplay muted></video>
+            </div>
+            
+            <div id="telemetry" class="telemetry">
+                <div class="bar-row"><span class="pct-val" id="p-1">0%</span><div class="bar-bg"><div id="b-1" class="bar-fill" style="background:#00ff88"></div></div></div>
+                <div class="bar-row"><span class="pct-val" id="p-2">0%</span><div class="bar-bg"><div id="b-2" class="bar-fill" style="background:#0099ff"></div></div></div>
+                <div class="bar-row"><span class="pct-val" id="p-3">0%</span><div class="bar-bg"><div id="b-3" class="bar-fill" style="background:#ff3333"></div></div></div>
+                <div class="bar-row"><span class="pct-val" id="p-4">0%</span><div class="bar-bg"><div id="b-4" class="bar-fill" style="background:#cccccc"></div></div></div>
+            </div>
+
+            <div id="emo-detect" style="text-align:center; font-size:0.5rem; margin-top:10px; color:var(--accent); font-weight:700; letter-spacing:1px;">[ SYSTEM IDLE ]</div>
+            <button class="cam-btn" onclick="toggleStream('emo')">BIND NEURAL</button>
+        </div>
+
+        <div class="widget">
+            <div class="label">Environment</div>
+            <div class="cam-frame env"><video id="v-cap" autoplay muted></video></div>
+            <button class="cam-btn" onclick="toggleStream('cap')" style="color:var(--aurora);">SYNC FEED</button>
+        </div>
+
+        <button class="action-btn" onclick="toggleVoiceEmotion()" id="voice-emo-btn">
+            🎙️ VOCAL SENTIMENT: OFF
+        </button>
+        
+        <button class="action-btn logout-btn" onclick="logoutSession()">
+            ⏻ LOGOUT
+        </button>
+    </aside>
+
+    <main class="chat-main">
+        <div class="chat-column">
+            <div id="chat-log">
+                {% if history %}
+                    {% for msg in history %}
+                        <div class="msg user">{{ msg[0] }}</div>
+                        <div class="msg ai">{{ msg[1] }}</div>
+                    {% endfor %}
+                {% else %}
+                    <div class="msg ai">Neural interface online. Authorized user detected. How shall we proceed?</div>
+                {% endif %}
+            </div>
+
+            <div id="emoji-container"></div>
+
+            <div class="input-wrap">
+                <div class="input-box">
+                    <button class="btn" id="voice-btn" onclick="startVoiceRecognition()" title="Voice Input">🎙️</button>
+                    <button class="btn" onclick="toggleStream('cap')" title="Environment Camera" style="color:var(--aurora)">📷</button>
+                    <input type="text" id="user-in" placeholder="Transmit neural command..." onkeypress="if(event.key==='Enter') send()">
+                    <button class="btn" onclick="toggleEmoji()" title="Emojis">☄️</button>
+                    <button class="btn" onclick="send()" style="color:var(--aurora)">➤</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <aside class="right-sidebar">
+        <div class="widget">
+            <div class="label">Volatility Vector</div>
+            <div class="chart-container">
+                <canvas id="marketChart"></canvas>
+            </div>
+        </div>
+
+        <div class="widget">
+            <div class="label">Bank Rating Matrix</div>
+            <div class="market-heatmap" id="heatmap">
+                <div class="heat-cell" style="background: rgba(0, 255, 170, 0.4);" title="Strong Buy">HDFC</div>
+                <div class="heat-cell" style="background: rgba(0, 255, 170, 0.35);" title="Outperform">ICICI</div>
+                <div class="heat-cell" style="background: rgba(0, 255, 170, 0.3);" title="Buy">SBI</div>
+                <div class="heat-cell" style="background: rgba(255, 255, 255, 0.1);" title="Hold">AXIS</div>
+                <div class="heat-cell" style="background: rgba(255, 255, 255, 0.08);" title="Hold">KOTK</div>
+                <div class="heat-cell" style="background: rgba(255, 255, 255, 0.05);" title="Neutral">BOB</div>
+                <div class="heat-cell" style="background: rgba(255, 51, 51, 0.15);" title="Underperform">IDFC</div>
+                <div class="heat-cell" style="background: rgba(255, 51, 51, 0.25);" title="Sell">YES</div>
+                <div class="heat-cell" style="background: rgba(255, 51, 51, 0.4);" title="Strong Sell">INDUS</div>
+            </div>
+
+            <div id="matrix-legend" class="legend-container">
+                <div class="label" style="font-size: 0.45rem; text-align: left;">Legend: Rating Gradient</div>
+                <div class="legend-bar">
+                    <div style="flex:1; background:rgba(0, 255, 170, 0.4);"></div>
+                    <div style="flex:1; background:rgba(255, 255, 255, 0.1);"></div>
+                    <div style="flex:1; background:rgba(255, 51, 51, 0.4);"></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.4rem; color:var(--text-muted); font-family:'Orbitron'; margin-top:3px;">
+                    <span>BUY</span><span>HOLD</span><span>SELL</span>
+                </div>
+            </div>
+
+            <div class="label" style="margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px;">Interest Rates</div>
+            <div style="font-size: 0.6rem; color: #fff; line-height: 1.8; font-family: 'Orbitron'; display: flex; justify-content: space-between;">
+                <span>REPO:</span><span style="color:var(--aurora)">6.50%</span>
+            </div>
+            <div style="font-size: 0.6rem; color: #fff; line-height: 1.8; font-family: 'Orbitron'; display: flex; justify-content: space-between;">
+                <span>SOFR:</span><span style="color:var(--aurora)">5.31%</span>
+            </div>
+
+            <button class="fin-terminal-btn" onclick="triggerFinIntel()">
+                FINANCIAL INTELLIGENCE
+            </button>
+        </div>
+
+        <div class="widget" style="text-align:center;">
+            <div class="label">Live Singularity</div>
+            <h2 id="nifty-val" style="font-family: 'Orbitron'; font-size:1.4rem; color: var(--fin-accent);">24,321.05</h2>
+            <p style="font-size:0.55rem; color: var(--text-muted); margin-top: 5px;">NIFTY 50 INDEX • LIVE</p>
+            <div id="nifty-pct" style="font-size:0.6rem; color: var(--fin-accent); font-weight: 700; margin-top: 8px;">+0.82% ▲</div>
+        </div>
+
+        <div class="widget">
+            <div class="label">Asset Intel</div>
+            <div style="font-size: 0.6rem; color: #fff; line-height: 1.8; font-family: 'Orbitron';">
+                BTC: <span id="btc-val" style="color:var(--fin-accent)">$64,120</span><br>
+                ETH: <span id="eth-val" style="color:var(--fin-accent)">$3,450</span><br>
+                GOLD: <span id="gold-val" style="color:var(--fin-accent)">$2,341</span>
+            </div>
+        </div>
+
+        <div style="margin-top: auto; padding: 10px; text-align: center;">
+            <div style="font-size: 0.45rem; color: var(--text-muted); font-family: 'Orbitron';">ENCRYPTED NODE: ALPHA-7</div>
+        </div>
+    </aside>
+</div>
+
+<script>
+    const universe = document.getElementById('universe');
+    for(let i=0; i<200; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        const size = Math.random() * 2 + 'px';
+        star.style.width = size; star.style.height = size;
+        star.style.top = Math.random() * 100 + '%';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+        universe.appendChild(star);
+    }
+
+    const ctx = document.getElementById('marketChart').getContext('2d');
+    let marketData = Array(15).fill(24321);
+    const mChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: Array(15).fill(''),
+            datasets: [{
+                data: marketData,
+                borderColor: '#00ffaa',
+                borderWidth: 2,
+                pointRadius: 0,
+                fill: true,
+                backgroundColor: 'rgba(0, 255, 170, 0.05)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { x: { display: false }, y: { display: false } }
+        }
+    });
+
+    setInterval(() => {
+        let last = marketData[marketData.length - 1];
+        let next = last + (Math.random() - 0.48) * 20;
+        marketData.push(next);
+        marketData.shift();
+        mChart.update();
+        document.getElementById('nifty-val').innerText = next.toFixed(2);
+        
+        document.querySelectorAll('.heat-cell').forEach(cell => {
+            const currentBg = cell.style.background;
+            let parts = currentBg.split(',');
+            let baseOpacity = parseFloat(parts.pop());
+            let flux = (Math.random() * 0.1 - 0.05); 
+            let newOpacity = Math.max(0.05, Math.min(0.5, baseOpacity + flux));
+            cell.style.background = `${parts.join(',')}, ${newOpacity})`;
+        });
+    }, 2000);
+
+    let streams = { emo: null, cap: null };
+    let emoInterval;
+    let voiceEmotionActive = false;
+
+    function logoutSession() {
+        if(confirm("Confirm neural disconnection? Your session history has been archived.")) {
+            document.body.innerHTML = `
+                <div style="font-family:'Orbitron'; color:var(--accent); display:flex; flex-direction:column; height:100vh; align-items:center; justify-content:center; background:#000; letter-spacing:5px; text-align:center;">
+                    <div style="font-size: 2rem; margin-bottom: 20px;">TERMINATING SESSION</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">DISCONNECTING NEURAL LINK...</div>
+                </div>`;
+            setTimeout(() => { window.location.href = '/logout'; }, 1500);
+        }
+    }
+
+    async function toggleVoiceEmotion() {
+        const btn = document.getElementById('voice-emo-btn');
+        if (!voiceEmotionActive) {
+            try {
+                await navigator.mediaDevices.getUserMedia({ audio: true });
+                voiceEmotionActive = true;
+                btn.innerText = "🎙️ VOCAL SENTIMENT: ACTIVE";
+                btn.style.color = "var(--fin-accent)";
+                btn.style.borderColor = "var(--fin-accent)";
+                append('ai', "SYSTEM: Vocal frequency analysis initiated.");
+                simulateVocalAnalysis();
+            } catch (err) { alert("Audio Access Denied."); }
+        } else {
+            voiceEmotionActive = false;
+            btn.innerText = "🎙️ VOCAL SENTIMENT: OFF";
+            btn.style.color = "var(--text-muted)";
+            btn.style.borderColor = "var(--border)";
+            append('ai', "SYSTEM: Vocal sentiment protocol terminated.");
+        }
+    }
+
+    function simulateVocalAnalysis() {
+        if (!voiceEmotionActive) return;
+        const sentiments = ["Calm", "Anxious", "Determined", "Neutral"];
+        const randomSentiment = sentiments[Math.floor(Math.random() * sentiments.length)];
+        setTimeout(() => {
+            if (voiceEmotionActive) {
+                append('ai', `[VOCAL TELEMETRY] Tone: ${randomSentiment.toUpperCase()}`);
+                setTimeout(simulateVocalAnalysis, 15000); 
+            }
+        }, 3000);
+    }
+
+    async function toggleStream(type) {
+        const vid = document.getElementById(type === 'emo' ? 'v-emo' : 'v-cap');
+        const tel = document.getElementById('telemetry');
+        const scan = document.getElementById('scan-line');
+        if(streams[type]) {
+            streams[type].getTracks().forEach(t => t.stop());
+            streams[type] = null; vid.srcObject = null;
+            if(type === 'emo') {
+                clearInterval(emoInterval);
+                tel.style.display = scan.style.display = 'none';
+                document.getElementById('emo-detect').innerText = "[ SYSTEM IDLE ]";
+            }
+        } else {
+            try {
+                const s = await navigator.mediaDevices.getUserMedia({video: true});
+                streams[type] = s; vid.srcObject = s;
+                if(type === 'emo') {
+                    tel.style.display = scan.style.display = 'block';
+                    startNeuralTelemetry();
+                }
+            } catch(e) { alert("Link Failed."); }
+        }
+    }
+
+    function startNeuralTelemetry() {
+        emoInterval = setInterval(() => {
+            const humanEmos = ['Happy', 'Sad', 'Angry', 'Neutral'];
+            let remaining = 100;
+            let topVal = -1;
+            let dominant = "";
+            humanEmos.forEach((label, idx) => {
+                let val = (idx === humanEmos.length - 1) ? remaining : Math.floor(Math.random() * (remaining / 1.5));
+                remaining -= val;
+                const idNum = idx + 1;
+                document.getElementById('b-'+idNum).style.width = val + "%";
+                document.getElementById('p-'+idNum).innerText = val + "%";
+                if(val > topVal) { topVal = val; dominant = label; }
+            });
+            document.getElementById('emo-detect').innerText = `[ DOMINANT: ${dominant.toUpperCase()} ]`;
+        }, 800);
+    }
+
+    // UPDATED FUNCTION: Shows the legend and appends the message
+    function triggerFinIntel() { 
+        document.getElementById('matrix-legend').style.display = 'block';
+        append('ai', `[FINANCIAL INTELLIGENCE] Bank Sector Matrix updated. High liquidity detected in Tier-1 nodes (HDFC, ICICI). Sentiment: BULLISH.`); 
+    }
+
+    function startVoiceRecognition() {
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'en-US';
+        recognition.onstart = () => { document.getElementById('voice-btn').style.color = "var(--accent)"; };
+        recognition.onresult = (event) => { document.getElementById('user-in').value = event.results[0][0].transcript; send(); };
+        recognition.onend = () => { document.getElementById('voice-btn').style.color = "#555"; };
+        recognition.start();
+    }
+
+    const pickerOptions = { theme: 'dark', onEmojiSelect: (emoji) => { document.getElementById('user-in').value += emoji.native; } };
+    const picker = new EmojiMart.Picker(pickerOptions);
+    document.getElementById('emoji-container').appendChild(picker);
+    function toggleEmoji() {
+        const container = document.getElementById('emoji-container');
+        container.style.display = container.style.display === 'block' ? 'none' : 'block';
+    }
+
+    async function send() {
+        const inp = document.getElementById('user-in');
+        const text = inp.value.trim();
+        if(!text) return;
+
+        const emoText = document.getElementById('emo-detect').innerText;
+        const currentEmotion = emoText.includes("DOMINANT") ? emoText.split(': ')[1].replace(' ]', '').toLowerCase() : 'neutral';
+
+        append('user', text);
+        inp.value = '';
+        try {
+            const res = await fetch('/api/chat', { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify({ message: text, emotion: currentEmotion }) 
+            });
+            const data = await res.json();
+            append('ai', data.response || data.reply);
+        } catch { append('ai', "SHINE: Data stream processed via neural link."); }
+    }
+
+    function append(c, t) { 
+        const log = document.getElementById('chat-log'); 
+        const d = document.createElement('div'); 
+        d.className = `msg ${c}`; 
+        d.innerText = t; 
+        log.appendChild(d); 
+        log.scrollTo({ top: log.scrollHeight, behavior: 'smooth' }); 
+    }
+
+    window.onload = () => {
+        const log = document.getElementById('chat-log');
+        log.scrollTop = log.scrollHeight;
+    };
+</script>
+</body>
+</html>

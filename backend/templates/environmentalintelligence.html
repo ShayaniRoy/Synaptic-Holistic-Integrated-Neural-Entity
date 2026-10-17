@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Environmental Intelligence | Eco-Sentinel</title>
+    <style>
+        :root {
+            --eco-green: #00ffcc;
+            --thermal-orange: #ff9d00;
+            --deep-teal: #0a1f1f;
+            --glass-white: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            margin: 0;
+            background: #050a0a;
+            color: #e0f2f1;
+            font-family: 'Segoe UI', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+        }
+
+        /* Side Panel: Analytics */
+        .analytics-panel {
+            background: rgba(0, 40, 40, 0.4);
+            backdrop-filter: blur(25px);
+            border-right: 1px solid rgba(0, 255, 204, 0.2);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .data-card {
+            background: var(--glass-white);
+            border: 1px solid rgba(0, 255, 204, 0.3);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .thermal-border {
+            border-color: rgba(255, 157, 0, 0.3);
+        }
+
+        .value-text {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--eco-green);
+            text-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
+        }
+
+        .temp-color {
+            color: var(--thermal-orange);
+            text-shadow: 0 0 20px rgba(255, 157, 0, 0.3);
+        }
+
+        /* Main Viewport */
+        .viewport {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .globe-container {
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            border: 1px dashed var(--eco-green);
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .core-node {
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, var(--eco-green) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(30px);
+            animation: pulse 4s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; transform: scale(0.8); }
+            100% { opacity: 0.8; transform: scale(1.1); }
+        }
+
+        .btn-predict {
+            margin-top: 30px;
+            background: transparent;
+            border: 2px solid var(--eco-green);
+            color: var(--eco-green);
+            padding: 12px 40px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        .btn-predict:hover {
+            background: var(--eco-green);
+            color: #050a0a;
+            box-shadow: 0 0 30px var(--eco-green);
+        }
+
+        .back-link {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            color: white;
+            text-decoration: none;
+            opacity: 0.6;
+        }
+
+        .hud-label {
+            position: absolute;
+            font-family: monospace;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            color: var(--eco-green);
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="analytics-panel">
+        <h2 style="letter-spacing: 2px; margin-bottom: 10px;">ECO-SENTINEL</h2>
+        
+        <div class="data-card">
+            <p style="margin: 5px 0; font-size: 0.8rem;">AIR QUALITY INDEX</p>
+            <div class="value-text" id="aqi">42</div>
+            <p id="status" style="margin: 5px 0; font-size: 0.8rem;">Status: OPTIMAL</p>
+        </div>
+
+        <div class="data-card thermal-border">
+            <p style="margin: 5px 0; font-size: 0.8rem;">SURFACE TEMPERATURE</p>
+            <div class="value-text temp-color"><span id="temp">24.5</span>°C</div>
+            <p id="temp-status" style="margin: 5px 0; font-size: 0.8rem; color: var(--thermal-orange);">Status: STABLE</p>
+        </div>
+
+        <div style="font-size: 0.8rem; opacity: 0.7;">
+            <p>CO2: 415.2 ppm</p>
+            <p>Humidity: 58%</p>
+            <p>UV Index: 3.1 (Low)</p>
+        </div>
+        
+        <div id="log-stream" style="font-family: monospace; font-size: 0.65rem; color: #666; height: 100px; overflow-y: auto; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+            > System: Neural Link established...<br>
+            > Global Sensor Grid: ONLINE
+        </div>
+    </aside>
+
+    <main class="viewport">
+        <a href="/intelligence" class="back-link">← EXIT SENTINEL</a>
+        
+        <div class="hud-label" style="top: 20px; left: 20px;">NODE: ENVIRONMENT_01</div>
+        
+        <div class="globe-container">
+            <div class="core-node"></div>
+            <div style="position: absolute; top: 0; left: 50%; color: var(--eco-green);">●</div>
+        </div>
+
+        <button class="btn-predict" onclick="runAnalysis()">Update Environmental Data</button>
+        
+        <div class="hud-label" style="bottom: 20px; right: 20px;">Model: FB Prophet + Thermal Analysis</div>
+    </main>
+
+    <script>
+        function runAnalysis() {
+            const log = document.getElementById('log-stream');
+            const aqiText = document.getElementById('aqi');
+            const tempText = document.getElementById('temp');
+            const status = document.getElementById('status');
+            const tempStatus = document.getElementById('temp-status');
+
+            log.innerHTML += "<br>> Processing environmental telemetry...";
+            
+            setTimeout(() => {
+                // Randomize data to simulate live detection
+                const newAqi = Math.floor(Math.random() * 80) + 20;
+                const newTemp = (Math.random() * (32.0 - 22.0) + 22.0).toFixed(1);
+
+                aqiText.innerText = newAqi;
+                tempText.innerText = newTemp;
+                
+                // Update AQI Status
+                if(newAqi > 100) {
+                    status.innerText = "Status: UNHEALTHY";
+                    status.style.color = "#ff4444";
+                } else {
+                    status.innerText = "Status: OPTIMAL";
+                    status.style.color = "#00ffcc";
+                }
+
+                // Update Temperature Status
+                if(newTemp > 30) {
+                    tempStatus.innerText = "Status: ELEVATED";
+                } else {
+                    tempStatus.innerText = "Status: STABLE";
+                }
+
+                log.innerHTML += `<br>> Success: AQI ${newAqi} | Temp ${newTemp}°C`;
+                log.scrollTop = log.scrollHeight;
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
