@@ -28,6 +28,60 @@
 
 ---
 
+## 🧠 Enterprise AI/ML Architecture & Model Orchestration
+
+S.H.I.N.E. features a production-grade, hybrid multimodal architecture that unifies real-time spatial computer vision, audio perception pipelines, and dynamic multi-provider Large Language Model (LLM) orchestration.
+
+## 🏗️ Production Systems Architecture & Model Governance
+
+S.H.I.N.E. is engineered as a high-throughput, fault-tolerant multimodal intelligence framework. Designed with a decoupled sensory pipeline, it dynamically balances cloud acceleration with privacy-first edge execution.
+
+### 🔄 End-to-End Distributed Execution Flow
+
+1. **Multimodal Ingestion Layer**
+   Asynchronous capture of continuous video frames and streaming audio waveforms.
+2. **Inference & Feature Extraction**
+   * **Spatial Vision Pipeline:** OpenCV-driven region-of-interest (ROI) isolation paired with deep Convolutional Neural Networks (CNNs) for real-time micro-expression emotion inference.
+   * **Acoustic Perception Core:** **Whisper-Large-v3** transformer streaming pipeline converting live speech directly into text tokens for instant prompt injection.
+3. **Context Serialization & Prompt Engineering**
+   Encapsulates real-time emotional metrics and active conversational states into structured, dynamic prompt payloads.
+4. **Fault-Tolerant Routing Engine**
+   Automated load-balancing and failover mechanism ensuring zero-downtime switching between cloud accelerators and local edge runtimes.
+
+### 🔬 Core Systems Engineering & Design Patterns
+
+* **🖼️ Multimodal Spatial Vision Engine**
+  Built for low-latency visual tracking. Uses OpenCV for face detection and bounding-box tracking, feeding normalized frames into deep CNNs to map affective states.
+* **🎙️ Low-Latency Speech & Perception Core**
+  Leverages **Whisper-Large-v3** and **Whisper-Large-v3-turbo** for high-accuracy streaming speech-to-text (STT) and real-time voice interaction.
+* **⚙️ Adaptive Fallback & Orchestration Router**
+  Implements intelligent multi-provider routing to guarantee system resilience, automatically rerouting queries if primary cloud APIs experience throttling or latency spikes.
+
+### 🚀 Production Model Registry & Runtimes
+
+* **⚡ Groq LPU Cloud Acceleration** `Cloud Inference` `Ultra-Low Latency`
+  * **System Role:** High-throughput streaming conversation, complex multi-step reasoning, and rapid speech transcription.
+  * **Deployed Models:** 
+    * `meta-llama/llama-4-scout-17b-16e-instruct`
+    * `llama-3.1-8b-instant`
+    * `llama-3.3-70b-versatile`
+    * `whisper-large-v3`
+    * `whisper-large-v3-turbo`
+
+* **💻 Ollama Edge Runtime** `On-Device Inference` `Privacy-First`
+  * **System Role:** Offline local execution, edge computing, zero network overhead, and private chain-of-thought (CoT) reasoning.
+  * **Deployed Models:** 
+    * `gemma4:e4b`
+    * `llama3.2`
+    * `deepseek-r1`
+    * `deepseek-r1:1.5b`
+
+* **🌐 Google Generative AI** `API Extension Layer` `Multimodal Fallback`
+  * **System Role:** Cross-provider redundancy, complex contextual evaluation, and system fallback routing.
+  * **Deployed Models:** 
+    * `genai`
+---
+
 ## 📸 Interface & Preview
 
 > *You can drag and drop your project screenshots directly into the GitHub editor below!*
